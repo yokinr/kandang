@@ -21,6 +21,7 @@
 					<nav class="sb-sidenav-menu-nested nav">
 						<a class="nav-link" href="<?= base_url('data_utama/page/lokasi') ?>">Data Lokasi</a>
 						<a class="nav-link" href="<?= base_url('data_utama/page/kandang') ?>">Data Kandang</a>
+						<a class="nav-link" href="<?= base_url('data_utama/page/peternak') ?>">Data Peternak</a>
 						<a class="nav-link" href="<?= base_url('data_utama/page/pelanggan') ?>">Data Pelanggan</a>
 						<a class="nav-link" href="<?= base_url('data_utama/page/pengguna') ?>">Data Pengguna</a>
 					</nav>

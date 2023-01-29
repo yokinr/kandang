@@ -8,6 +8,21 @@ class M_data_utama extends CI_Model {
 		return $this->db->get('lokasi')->result();
 	}	
 
+	function pelanggan()
+	{
+		return $this->db->get('pelanggan')->result();
+	}
+
+	function pengguna()
+	{
+		return $this->db->get_where('users', ['hak_akses!='=>1])->result();
+	}
+
+	function peternak()
+	{
+		return $this->db->get('peternak')->result();
+	}
+
 }
 
 /* End of file M_data_utama.php */

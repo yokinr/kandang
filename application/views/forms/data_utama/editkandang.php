@@ -5,6 +5,7 @@ if($id){
 	if($cekKandang){
 		?>
 		<form hx-post="<?= base_url('data_utama/kandang/edit') ?>" hx-target="#data">
+			<input type="hidden" name="id" value="<?= $id ?>">
 			<div class="form-floating mb-3">
 				<select name="lokasi" class="form-select">
 					<option value="">...</option>
