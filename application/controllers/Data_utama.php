@@ -233,12 +233,76 @@ class Data_utama extends CI_Controller {
 		$this->load->view('pages/data_utama/pelanggan', $data, FALSE);
 	}
 
-	function pengguna()
+	function pengguna($aksi=null, $id=null)
 	{
+		if($aksi){
+			if($aksi=='tambah'){
+				$this->form_validation->set_rules('hak_akses', 'Peran', 'trim|required');
+				$this->form_validation->set_rules('user', 'User', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo "<div class='alert alert-danger'>".validation_errors()."</div>";
+				} else {
+					$table = $this->level()[$this->input->post('hak_akses')];
+					$detailUser = $this->db->get_where($table, ['uniq'=>$this->input->post('user')])->row_array();
+					if($detailUser['email']){
+						$email = $detailUser['email'];
+					}else{
+						$email = strtolower(str_replace(' ', '', $detailUser['nama'])).'@pengguna.id';
+					}
+					$object = [
+						'uniq' => $detailUser['uniq'],
+						'nama' => $detailUser['nama'],
+						'username' => $email,
+						'password' => password_hash('123456', PASSWORD_DEFAULT),
+						'hak_akses' => $this->input->post('hak_akses'),
+						'status' => 1,
+					];
+					$cekPengguna = $this->db->get_where('users', $object)->result();
+					if($cekPengguna){
+						echo "<div class='alert alert-danger'>Pengguna sudah tersedia</div>";
+					}else{
+						$this->db->insert('users', $object);
+						if($this->db->affected_rows()>>0){
+							echo "<div class='alert alert-success'>Berhasil menambahkan data</div>";
+						}else{
+							echo "<div class='alert alert-danger'>Gagal menambahkan data</div>";
+						}
+					}
+				}
+			}
+		}
 		$data = [
 			'pengguna' => $this->data_utama->pengguna(),
 		];
 		$this->load->view('pages/data_utama/pengguna', $data, FALSE);
+	}
+
+	function peran_pengguna()
+	{
+		if($this->input->post('hak_akses')){
+			$hak_akses = $this->input->post('hak_akses');
+			$table = $this->level()[$hak_akses];
+			$cekPengguna = $this->db->query("SELECT * from $table where uniq not in(SELECT uniq from users)")->result();
+			if($cekPengguna){
+				?>
+				<option value="">...</option>
+				<?php foreach ($cekPengguna as $key => $value): ?>
+					<option value="<?= $value->uniq ?>"><?= $value->nama ?></option>
+				<?php endforeach ?>
+				<?php
+			}else{
+				?> <option value="">0 Results</option> <?php
+			}
+		}
+	}
+
+	function level()
+	{
+		return $level = [
+			'1' => 'Admin',
+			'2' => 'Peternak',
+			'3' => 'Pelanggan',
+		];
 	}
 
 }
