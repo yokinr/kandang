@@ -299,9 +299,9 @@ class Data_utama extends CI_Controller {
 	function level()
 	{
 		return $level = [
-			'1' => 'Admin',
-			'2' => 'Peternak',
-			'3' => 'Pelanggan',
+			'1' => 'admin',
+			'2' => 'peternak',
+			'3' => 'pelanggan',
 		];
 	}
 
