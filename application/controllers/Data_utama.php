@@ -11,7 +11,7 @@ class Data_utama extends CI_Controller {
 	public function page($page=null, $id=null)
 	{
 		$data = [
-			'title' => $page,
+			'title' => "<i class='fas fa-home'></i> ".ucwords(str_replace('_', ' ', $page)),
 			'dataget' => base_url('data_utama/'.$page),
 			'dataid' => $id,
 		];

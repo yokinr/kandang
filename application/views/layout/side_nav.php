@@ -26,18 +26,16 @@
 						<a class="nav-link" href="<?= base_url('data_utama/page/pengguna') ?>">Data Pengguna</a>
 					</nav>
 				</div>
-				<!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#exam" aria-expanded="false" aria-controls="collapseLayouts">
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pengelolaan" aria-expanded="false" aria-controls="collapseLayouts">
 					<div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-					Exam
+					Pengelolaan
 					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 				</a>
-				<div class="collapse" id="exam" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+				<div class="collapse" id="pengelolaan" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
 					<nav class="sb-sidenav-menu-nested nav">
-						<a class="nav-link" href="<?= base_url('exam/page/data_tes') ?>">Data Tes</a>
-						<a class="nav-link" href="<?= base_url('exam/page/paket_soal') ?>">Paket Soal</a>
-						<a class="nav-link" href="<?= base_url('exam/page/jadwal_tes') ?>">Jadwal Tes</a>
+						<a class="nav-link" href="<?= base_url('pengelolaan/page/kandang') ?>">Kandang</a>
 					</nav>
-				</div> -->
+				</div>
 			</div>
 		</div>
 		<div class="sb-sidenav-footer">
