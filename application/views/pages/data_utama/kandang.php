@@ -7,12 +7,12 @@
 				<div class="col">
 					<form id="form_lokasi" method="GET">
 						<div class="form-floating">
-							<select name="lokasi" class="form-select" id="lokasi" hx-get="<?= base_url('data_utama/kandang') ?>" hx-target="#data">
+							<select name="lokasi" class="form-select" id="lokasi" hx-get="<?= base_url('data_utama/data_kandang') ?>" hx-target="#data">
 								<option value="">...</option>
 								<?php foreach ($lokasi as $key => $value): ?>
 									<?php
-									if($getLokasi){
-										if($getLokasi==$value->uniq){
+									if($this->session->userdata('lokasi')){
+										if($this->session->userdata('lokasi')==$value->uniq){
 											?> <option value="<?= $value->uniq ?>" selected><?= $value->nama ?></option> <?php
 										}else{
 											?> <option value="<?= $value->uniq ?>"><?= $value->nama ?></option> <?php
@@ -50,10 +50,10 @@
 								<td><?= $key ?></td>
 								<td><?= $cekLokasi['nama'] ?></td>
 								<td><?= $value->nama ?></td>
-								<td><?= $value->kapasitas ?></td>
+								<td><?= number_format($value->kapasitas,0,',','.') ?></td>
 								<td class="text-center">
 									<button class="btn btn-link text-success" hx-post="<?= base_url('form/get/data_utama/editkandang/'.$value->uniq) ?>" hx-target=".modal-body" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-edit"></i></button>
-									<button class="btn btn-link text-danger" hx-post="<?= base_url('data_utama/kandang/hapus/'.$value->uniq) ?>" hx-target="#data" hx-confirm="Yakin ?"><i class="fas fa-trash"></i></button>
+									<button class="btn btn-link text-danger" hx-post="<?= base_url('data_utama/data_kandang/hapus/'.$value->uniq) ?>" hx-target="#data" hx-confirm="Yakin ?"><i class="fas fa-trash"></i></button>
 								</td>
 							</tr>
 						<?php endforeach ?>

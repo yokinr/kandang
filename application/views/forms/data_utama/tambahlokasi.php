@@ -1,4 +1,4 @@
-<form hx-post="<?= base_url('data_utama/lokasi/tambah') ?>" hx-target="#data">
+<form hx-post="<?= base_url('data_utama/data_lokasi/tambah') ?>" hx-target="#data">
 	<div class="form-floating mb-3">
 		<input type="text" name="nama" class="form-control" placeholder="Nama">
 		<label>Nama</label>

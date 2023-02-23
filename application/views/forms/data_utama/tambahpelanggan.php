@@ -1,7 +1,11 @@
-<form hx-post="<?= base_url('data_utama/pelanggan/tambah') ?>" hx-target="#data">
+<form hx-post="<?= base_url('data_utama/data_pelanggan/tambah') ?>" hx-target="#data">
 	<div class="form-floating mb-3">
 		<input type="text" name="nama" class="form-control" placeholder="Nama" required>
 		<label>Nama</label>
+	</div>
+	<div class="form-floating mb-3">
+		<input type="email" name="email" class="form-control" placeholder="E-mail" required>
+		<label>E-mail</label>
 	</div>
 	<div class="form-floating mb-3">
 		<input type="text" name="alamat" class="form-control" placeholder="Alamat" required>

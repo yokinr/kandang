@@ -1,58 +1,54 @@
-<?php
-if($id){
-	$cekKandang = $this->db->get_where('kandang', ['uniq'=>$id])->row_array();
-	if($cekKandang){
-		$cekIsikandang = $this->db->get_where('isi_kandang', ['uniq_kandang'=>$id])->result();
-		if($cekIsikandang){
-			if(count($cekIsikandang)>=1){
-				$nama = $cekKandang['nama'];
-				$kapasitas = $cekKandang['kapasitas'];
-				$jml_masuk = $cekIsikandang[0]->jml_masuk;
-				$icon = "<i class='fas fa-edit'></i>";
-				$aksi = 'edit_jumlah_masuk';
-				form($id, $nama, $kapasitas, $jml_masuk, $aksi, $icon);
+
+<div class="card">
+	<div class="card-header">
+		<button class="btn btn-primary" hx-post="<?= base_url('form/get/pengelolaan/tambahisikandang/'.$id) ?>" hx-target=".modal-body"><i class="fas fa-plus"></i> Tambah Data</button>
+	</div>
+	<div class="card-body">
+		<?php
+		if($id){
+			$CI =& get_instance();
+			$CI->load->model('m_pengelolaan');
+			$isi_kandang = $CI->m_pengelolaan->isi_kandang($id);
+			if($isi_kandang){
+				?>
+				<table class="table table-striped table-sm">
+					<thead>
+						<tr>
+							<th>No</th>
+							<th>Tanggal Masuk</th>
+							<th>Jumlah Masuk</th>
+							<th>Status</th>
+							<th>Aksi</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($isi_kandang as $key => $value): $key++ ?>
+							<tr>
+								<td><?= $key ?></td>
+								<td><?= $value->tanggal_masuk ?></td>
+								<td><?= $value->jumlah_masuk ?></td>
+								<td>
+									<?php
+									if($value->status==1){
+										echo "Aktif";
+									}else{
+										echo "Tidak Aktif";
+									}
+									?>
+								</td>
+								<td>
+									<button class="btn btn-sm btn-success" hx-post="<?= base_url('form/get/pengelolaan/editisikandang/'.$id.'/'.$value->uniq) ?>" hx-target=".modal-body"><i class="fas fa-edit"></i></button>
+									<button class="btn btn-danger btn-sm" hx-post="<?= base_url('form/get/pengelolaan/hapusisikandang/'.$id.'/'.$value->uniq) ?>" hx-target=".modal-body"><i class="fas fa-trash"></i></button>
+								</td>
+							</tr>
+						<?php endforeach ?>
+					</tbody>
+				</table>
+				<?php
 			}else{
-				echo count($cekIsikandang);
+				?> <div class="alert-danger p-3">0 Results</div> <?php
 			}
-		}else{
-			$nama = $cekKandang['nama'];
-			$kapasitas = $cekKandang['kapasitas'];
-			$jml_masuk = null;
-			$icon = "<i class='fas fa-plus-square'></i>";
-			$aksi = "tambah_jumlah_masuk";
-			form($id, $nama, $kapasitas, $jml_masuk, $aksi, $icon);
-		}
-	}else{
-		?> <div class="alert-danger p-5">Terjadi kesalahan sistem, data kandang tidak ditemukan</div> <?php
-	}
-	
-}else{
-	?> <div class="alert-danger p-5">Terjadi kesalahan sistem</div> <?php
-}
-
-function form($id, $nama, $kapasitas, $jml_masuk, $aksi, $icon)
-{
-	?>
-	<h3 class="mb-3 text-center"><?= $icon.' '.ucwords(str_replace('_', ' ', $aksi)) ?></h3>
-	<form hx-post="<?= base_url('pengelolaan/kandang/'.$aksi) ?>" hx-target="#data">
-		<input type="hidden" name="id" value="<?= $id ?>">
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control disabled" value="<?= $nama ?>" disabled>
-			<label>Nama</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="number" class="form-control" value="<?= $kapasitas ?>" disabled>
-			<label>Kapasitas</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="number" class="form-control" name="jml_masuk" value="<?= $jml_masuk ?>">
-			<label>Jumlah Masuk</label>
-		</div>
-		<div class="d-block">
-			<button class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
-		</div>
-	</form>
-	<?php
-}
-
-?>
+		} 
+		?>
+	</div>
+</div>

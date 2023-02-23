@@ -33,7 +33,7 @@
 				<div class="container-fluid px-4">
 					<h3 class="mt-4"><?= $title ?></h3>
 					<hr>
-					<div hx-get="<?= $dataget.'/'.$dataid ?>" hx-target="#data" hx-trigger='load'>
+					<div hx-get="<?= $dataget ?>" hx-target="#data" hx-trigger='load'>
 						<div id="data"><div class="text-center"><img class="htmx-indicator" class="" style="width: 100px;height: 100px;" src="<?= base_url('assets/img/') ?>spinner.gif"></div></div>
 					</div>
 

@@ -4,8 +4,7 @@ if($id){
 	$lokasi = $this->db->get('lokasi')->result();
 	if($cekKandang){
 		?>
-		<form hx-post="<?= base_url('data_utama/kandang/edit') ?>" hx-target="#data">
-			<input type="hidden" name="id" value="<?= $id ?>">
+		<form hx-post="<?= base_url('data_utama/data_kandang/edit/'.$id) ?>" hx-target="#data">
 			<div class="form-floating mb-3">
 				<select name="lokasi" class="form-select">
 					<option value="">...</option>

@@ -7,84 +7,199 @@ class Pengelolaan extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('m_data_utama', 'data_utama');
+		$this->load->model('m_pengelolaan');
 	}
 
-	function page($page=null, $id=null)
+	function kandang()
 	{
 		$data = [
-			'title' => "<i class='fas fa-home'></i> ".ucwords(str_replace('_', ' ', $page)),
-			'dataget' => base_url('pengelolaan/'.$page),
-			'dataid' => $id,
+			'title' => "Pengelolaan Kandang",
+			'dataget' => base_url('pengelolaan/data_kandang'),
 		];
 		$this->load->view('template', $data, FALSE);
 	}
 
-	function kandang($aksi=null, $id=null, $id1=null)
+	function data_kandang($page=null, $id=null, $id1=null)
 	{
-		if($aksi){
-			if($aksi=='tambah_jumlah_masuk'){
-				$this->form_validation->set_rules('jml_masuk', 'Jumlah Masuk', 'trim|required');
+		if($page){
+			if($page=='tambahisikandang'){
+				$this->form_validation->set_rules('tanggal_masuk', 'Tanggal Masuk', 'trim|required');
+				$this->form_validation->set_rules('jumlah_masuk', 'Jumlah Masuk', 'trim|required');
+				$this->form_validation->set_rules('status', 'Status', 'trim|required');
 				if ($this->form_validation->run() == FALSE) {
-					?> <div class="alert alert-danger"><?= validation_errors() ?></div> <?php
+					echo $this->alert->pesan('validasi');
 				} else {
-					$cekIsiKandang = $this->db->get_where('isi_kandang', ['uniq_kandang'=>$this->input->post('id'),'status'=>1])->result();
 					$object = [
 						'uniq' => uniqid(),
-						'uniq_kandang' => $this->input->post('id'),
-						'jml_masuk' => $this->input->post('jml_masuk'),
+						'uniq_kandang' => $id,
+						'tanggal_masuk' => $this->input->post('tanggal_masuk'),
+						'jumlah_masuk' => $this->input->post('jumlah_masuk'),
+						'status' => $this->input->post('status'),
 					];
+					$cekIsiKandang = $this->db->get_where('isi_kandang', ['status'=>1,'uniq_kandang'=>$id])->result();
 					if(!$cekIsiKandang){
 						$this->db->insert('isi_kandang', $object);
-						if($this->db->affected_rows()>>0){
-							?> <div class="alert-success alert"> Berhasil menyimpan data</div> <?php
-						}else{
-							?> <div class="alert alert-danger">Gagal menyimpan data</div> <?php
-						}
+						echo $this->alert->pesan('tambah');
 					}else{
-						// $this->db->where('uniq', $cekIsiKandang['uniq']);
-						echo "<pre>";
-						print_r ($cekIsiKandang);
-						echo "</pre>";
+						?> <div class="alert alert-danger">Tidak bisa menambahkan data isi kandang, karena terdeteksi ada data isi kandang yang berstatus Aktif !</div> <?php
 					}
 				}
 			}else
-			if($aksi=='tambah_peternak_kandang'){
-				$this->form_validation->set_rules('peternak', 'Peternak', 'trim|required');
-				if ($this->form_validation->run() == FALSE) {
-					?> <div class="alert alert-danger"><?= validation_errors()?></div> <?php
-				} else {
-					echo "<pre>";
-					print_r ($_POST);
-					echo "</pre>";
-					$object = [
-						'uniq' =>uniqid(),
-						'uniq_kandang' => $this->input->post('id'),
-						'uniq_peternak' => $this->input->post('peternak'),
-						'status' => 1,
-					];
-					$this->db->insert('peternak_kandang', $object);
-					if($this->db->affected_rows()>>0){
-						?> <div class="alert-success alert"> Berhasil menyimpan data</div> <?php
+			if($page=='editisikandang'){
+				$object = [
+					'tanggal_masuk' => $this->input->post('tanggal_masuk'),
+					'jumlah_masuk' => $this->input->post('jumlah_masuk'),
+					'status' => $this->input->post('status'),
+				];
+				
+				if($this->input->post('status')==1){
+					$cekIsiKandang = $this->db->get_where('isi_kandang', ['status'=>1,'uniq_kandang'=>$id1,'uniq!='=>$id])->result();
+					if(!$cekIsiKandang){
+						$this->db->where('uniq', $id);
+						$this->db->update('isi_kandang', $object);
+						echo $this->alert->pesan('edit');
 					}else{
-						?> <div class="alert alert-danger">Gagal menyimpan data</div> <?php
+						?> <div class="alert alert-danger">Tidak bisa merubah data isi kandang, karena terdeteksi ada data isi kandang yang berstatus Aktif !</div> <?php
+					}
+				}else{
+					$this->db->where('uniq', $id);
+					$this->db->update('isi_kandang', $object);
+					echo $this->alert->pesan('edit');
+				}
+			}else
+			if($page=='hapusisikandang'){
+				$this->db->where('uniq', $id);
+				$this->db->delete('isi_kandang');
+				echo $this->alert->pesan('hapus');
+			}else
+			if($page=='tambahpeternakkandang'){
+				$this->form_validation->set_rules('peternak', 'Peternak', 'trim|required');
+				$this->form_validation->set_rules('tanggal_masuk', 'Tanggal Masuk', 'trim|required');
+				$this->form_validation->set_rules('status', 'Status', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'uniq' => uniqid(),
+						'uniq_kandang' => $id,
+						'uniq_peternak' => $this->input->post('peternak'),
+						'tanggal_masuk' => $this->input->post('tanggal_masuk'),
+						'status' => $this->input->post('status'),
+					];
+					$cekPeternakKandang = $this->db->get_where('peternak_kandang', ['uniq_kandang'=>$id, 'status'=>1])->result();
+					if(!$cekPeternakKandang){
+						$this->db->insert('peternak_kandang', $object);
+						echo $this->alert->pesan('tambah');
+					}else{
+						?> <div class="alert alert-danger"> Tidak bisa menyiman data, terdeteksi <?= count($cekPeternakKandang) ?> data peternak aktif pada kandang ini </div> <?php
 					}
 				}
+			}else
+			if($page=='editpeternakkandang'){
+				$this->form_validation->set_rules('peternak', 'Peternak', 'trim|required');
+				$this->form_validation->set_rules('tanggal_masuk', 'Tanggal Masuk', 'trim|required');
+				$this->form_validation->set_rules('status', 'Status', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'uniq_peternak' => $this->input->post('peternak'),
+						'tanggal_masuk' => $this->input->post('tanggal_masuk'),
+						'status' => $this->input->post('status'),
+					];
+					$cekPeternakKandang = $this->db->get_where('peternak_kandang', ['status'=>1,'uniq_kandang'=>$id1,'uniq!='=>$id])->result();
+					if(!$cekPeternakKandang){
+						$this->db->where('uniq', $id);
+						$this->db->update('peternak_kandang', $object);
+						echo $this->alert->pesan('edit');
+					}else{
+						?> <div class="alert alert-danger"> Tidak bisa menyiman data, terdeteksi <?= count($cekPeternakKandang) ?> data peternak aktif pada kandang ini </div> <?php
+					}
+					
+				}
+			}else
+			if($page=='hapuspeternakkandang'){
+				$this->db->where('uniq', $id);
+				$this->db->delete('peternak_kandang');
+				echo $this->alert->pesan('hapus');
 			}
 		}
-		$lokasi = $this->data_utama->lokasi_semua();
+
 		if($this->input->get('lokasi')){
-			$getLokasi = $this->input->get('lokasi');
-		}else{
-			$getLokasi = $lokasi[0]->uniq;
+			$array = array(
+				'lokasi' => $this->input->get('lokasi'),
+			);
+			$this->session->set_userdata( $array );
 		}
 
-		$kandang = $this->db->get_where('kandang', ['uniq_lokasi'=>$getLokasi])->result();
+		if($this->session->userdata('lokasi')){
+			$kandang = $this->data_utama->kandang_lokasi();
+		}else{
+			$kandang = $this->data_utama->kandang();
+		}
 		$data = [
-			'lokasi' => $lokasi,
-			'getLokasi' => $getLokasi,
+			'lokasi' => $this->data_utama->lokasi(),
 			'kandang' => $kandang,
 		];
 		$this->load->view('pages/pengelolaan/kandang', $data, FALSE);
+	}
+
+	function barang_masuk()
+	{
+		$data = [
+			'title' => "Barang Masuk",
+			'dataget' => base_url('pengelolaan/data_barang_masuk'),
+		];
+		$this->load->view('template', $data, FALSE);
+	}
+
+	function data_barang_masuk($page=null, $id=null)
+	{
+		if($page){
+			if($page=='tambah'){
+				$this->form_validation->set_rules('barang', 'Barang', 'trim|required');
+				$this->form_validation->set_rules('tanggal', 'Tanggal', 'trim|required');
+				$this->form_validation->set_rules('jumlah', 'Jumlah', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'uniq' => uniqid(),
+						'uniq_barang' => $this->input->post('barang'),
+						'tanggal' => $this->input->post('tanggal'),
+						'jumlah' => $this->input->post('jumlah'),
+					];
+					$this->db->insert('barang_masuk', $object);
+					echo $this->alert->pesan('tambah');
+				}
+			}else
+			if($page=='edit'){
+				$this->form_validation->set_rules('barang', 'Barang', 'trim|required');
+				$this->form_validation->set_rules('tanggal', 'Tanggal', 'trim|required');
+				$this->form_validation->set_rules('jumlah', 'Jumlah', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'uniq_barang' => $this->input->post('barang'),
+						'tanggal' => $this->input->post('tanggal'),
+						'jumlah' => $this->input->post('jumlah'),
+					];
+					$this->db->where('uniq', $id);
+					$this->db->update('barang_masuk', $object);
+					echo $this->alert->pesan('tambah');
+				}
+			}else
+			if($page=='hapus'){
+				$this->db->where('uniq', $id);
+				$this->db->delete('barang_masuk');
+				echo $this->alert->pesan('hapus');
+			}
+		}
+		$data = [
+			'barang_masuk' => $this->m_pengelolaan->barang_masuk(),
+		];
+		$this->load->view('pages/pengelolaan/barang_masuk', $data, FALSE);
 	}
 
 }

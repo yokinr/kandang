@@ -14,9 +14,10 @@
 							<td><?= $value->nama ?></td>
 							<td><?= $value->username ?></td>
 							<td><?= $value->hak_akses ?></td>
+							<td><?= $value->status ?></td>
 							<td>
-								<button class="btn btn-link text-success"><i class="fas fa-edit"></i></button>
-								<button class="btn btn-link text-danger"><i class="fas fa-trash"></i></button>
+								<button class="btn btn-link text-success" data-bs-target="#exampleModal" data-bs-toggle="modal" hx-post="<?= base_url('form/get/data_utama/editpengguna/'.$value->uniq) ?>" hx-target=".modal-body"><i class="fas fa-edit"></i></button>
+								<button class="btn btn-link text-danger" hx-post="<?= base_url('data_utama/data_pengguna/hapus/'.$value->uniq) ?>" hx-target="#data" hx-confirm="Yakin ?"><i class="fas fa-trash"></i></button>
 							</td>
 						</tr>
 					<?php endforeach ?>

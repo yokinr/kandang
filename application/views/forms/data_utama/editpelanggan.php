@@ -3,11 +3,15 @@ if($id){
 	$cekpelanggan = $this->db->get_where('pelanggan', ['uniq'=>$id])->row_array();
 	if($cekpelanggan){
 		?>
-		<form hx-post="<?= base_url('data_utama/pelanggan/edit') ?>" hx-target="#data">
+		<form hx-post="<?= base_url('data_utama/data_pelanggan/edit/'.$id) ?>" hx-target="#data">
 			<input type="hidden" name="id" value="<?= $id ?>">
 			<div class="form-floating mb-3">
 				<input type="text" name="nama" class="form-control" placeholder="Nama" value="<?= $cekpelanggan['nama'] ?>" required>
 				<label>Nama</label>
+			</div>
+			<div class="form-floating mb-3">
+				<input type="email" name="email" class="form-control" placeholder="E-mail" value="<?= $cekpelanggan['email'] ?>" required>
+				<label>E-mail</label>
 			</div>
 			<div class="form-floating mb-3">
 				<input type="text" name="alamat" class="form-control" placeholder="Alamat" value="<?= $cekpelanggan['alamat'] ?>" required>

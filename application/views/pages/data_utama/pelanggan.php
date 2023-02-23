@@ -11,6 +11,7 @@
 					<tr>
 						<th>No</th>
 						<th>Nama</th>
+						<th>E-mail</th>
 						<th>Alamat</th>
 						<th>Nomor Kontak</th>
 						<th>Aksi</th>
@@ -21,11 +22,12 @@
 						<tr>
 							<td><?= $key ?></td>
 							<td><?= $value->nama ?></td>
+							<td><?= $value->email ?></td>
 							<td><?= $value->alamat ?></td>
 							<td><?= $value->kontak ?></td>
 							<td>
 								<button class="btn btn-link text-success" hx-post="<?= base_url('form/get/data_utama/editpelanggan/'.$value->uniq) ?>" hx-target=".modal-body" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-edit"></i></button>
-								<button class="btn btn-link text-danger" hx-post="<?= base_url('data_utama/pelanggan/hapus/'.$value->uniq) ?>" hx-target="#data" hx-confirm="Yakin ?"><i class="fas fa-trash"></i></button>
+								<button class="btn btn-link text-danger" hx-post="<?= base_url('data_utama/data_pelanggan/hapus/'.$value->uniq) ?>" hx-target="#data" hx-confirm="Yakin ?"><i class="fas fa-trash"></i></button>
 							</td>
 						</tr>
 					<?php endforeach ?>

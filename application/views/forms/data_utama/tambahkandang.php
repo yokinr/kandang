@@ -2,13 +2,23 @@
 $lokasi = $this->db->get('lokasi')->result();
 if($lokasi){
 	?>
-	<form hx-post="<?= base_url('data_utama/kandang/tambah') ?>" hx-target="#data">
+	<form hx-post="<?= base_url('data_utama/data_kandang/tambah') ?>" hx-target="#data">
 		<div class="form-floating mb-3">
 			<select name="lokasi" class="form-select">
 				<option value="">...</option>
-				<?php foreach ($lokasi as $key => $value): ?>
-					<option value="<?= $value->uniq ?>"><?= $value->nama ?></option>
-				<?php endforeach ?>
+				<?php
+				foreach ($lokasi as $key => $value) {
+					if($this->session->userdata('lokasi')){
+						if($this->session->userdata('lokasi')==$value->uniq){
+							?> <option value="<?= $value->uniq ?>" selected><?= $value->nama ?></option> <?php
+						}else{
+							?> <option value="<?= $value->uniq ?>"><?= $value->nama ?></option> <?php
+						}
+					}else{
+						?> <option value="<?= $value->uniq ?>"><?= $value->nama ?></option> <?php
+					}
+				}
+				?>
 			</select>
 			<label>Lokasi</label>
 		</div>

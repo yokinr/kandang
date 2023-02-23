@@ -14,8 +14,8 @@
 							<td><?= $value->nama ?></td>
 							<td><?= $value->alamat ?></td>
 							<td class="text-center">
-								<button class="btn text-success btn-sm btn-link"><i class="fas fa-edit"></i></button>
-								<button class="btn text-danger btn-sm btn-link" hx-post="<?= base_url('data_utama/lokasi/hapus/'.$value->uniq) ?>" hx-target="#data" hx-confirm="yakin ?"><i class="fas fa-trash"></i></button>
+								<button class="btn btn-success btn-sm" hx-post="<?= base_url('form/get/data_utama/editlokasi/'.$value->uniq) ?>" hx-target=".modal-body" data-bs-target="#exampleModal" data-bs-toggle="modal"><i class="fas fa-edit"></i></button>
+								<button class="btn btn-danger btn-sm" hx-post="<?= base_url('data_utama/data_lokasi/hapus/'.$value->uniq) ?>" hx-target="#data" hx-confirm="yakin ?"><i class="fas fa-trash"></i></button>
 							</td>
 						</tr>
 					<?php endforeach ?>

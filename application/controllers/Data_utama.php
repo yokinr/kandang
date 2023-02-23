@@ -8,178 +8,208 @@ class Data_utama extends CI_Controller {
 		$this->load->model('m_data_utama', 'data_utama');
 	}
 
-	public function page($page=null, $id=null)
+	function lokasi()
 	{
 		$data = [
-			'title' => "<i class='fas fa-home'></i> ".ucwords(str_replace('_', ' ', $page)),
-			'dataget' => base_url('data_utama/'.$page),
-			'dataid' => $id,
+			'title' => "Data Lokasi",
+			'dataget' => base_url('data_utama/data_lokasi'),
 		];
 		$this->load->view('template', $data, FALSE);
 	}
 
-	function lokasi($aksi=null, $id=null)
+	function data_lokasi($page=null, $id=null)
 	{
-		if($aksi){
-			if($aksi=='tambah'){
+		if($page){
+			if($page=='tambah'){
 				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
 				$this->form_validation->set_rules('alamat', 'Alamat', 'trim|required');
 				if ($this->form_validation->run() == FALSE) {
-					echo "<div class='alert alert-danger'>".validation_errors()."</div>";
+					?> <div class="alert alert-danger"> <?= validation_errors() ?></div> <?php
 				} else {
-					$where = [
+					$object = [
+						'uniq' => uniqid(),
 						'nama' => $this->input->post('nama'),
 						'alamat' => $this->input->post('alamat'),
 					];
-					$cekLokasi = $this->db->get_where('lokasi', $where)->result();
-					if($cekLokasi){
-						echo "<div class='alert alert-info'>Lokasi: ".$this->input->post('nama')." dan Alamat: ".$this->input->post('alamat')." sudah tersedia</div>";
-					}else{
-						$uniq = ['uniq'=>uniqid()];
-						$merge = array_merge($uniq,$where);
-						$this->db->insert('lokasi', $merge);
-						if($this->db->affected_rows()>>0){
-							echo "<div class='alert alert-success'>Berhasil menyimpan data</div>";
-						}else{
-							echo "<div class='alert alert-danger'>Gagal menyimpan data</div>";
-						}
-					}
+					$this->db->insert('lokasi', $object);
+					echo $this->alert->pesan('tambah');
 				}
 			}else
-			if($aksi=='edit'){
-
-			}else
-			if($aksi=='hapus'){
-				if($id){
+			if($page=='edit'){
+				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
+				$this->form_validation->set_rules('alamat', 'Alamat', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					?> <div class="alert alert-danger"> <?= validation_errors() ?></div> <?php
+				} else {
+					$object = [
+						'nama' => $this->input->post('nama'),
+						'alamat' => $this->input->post('alamat'),
+					];
 					$this->db->where('uniq', $id);
-					$this->db->delete('lokasi');
-					if($this->db->affected_rows()>>0){
-						echo "<div class='alert alert-success'>Berhasil menghapus data</div>";
-					}else{
-						echo "<div class='alert alert-danger'>Gagal menghapus data</div>";
-					}
+					$this->db->update('lokasi', $object);
+					echo $this->alert->pesan('edit');
 				}
+			}else
+			if($page=='hapus'){
+				$this->db->where('uniq', $id);
+				$this->db->delete('lokasi');
+				echo $this->alert->pesan('hapus');
 			}
 		}
 		$data = [
-			'lokasi' => $this->data_utama->lokasi_semua(),
+			'lokasi' => $this->data_utama->lokasi(),
 		];
 		$this->load->view('pages/data_utama/lokasi', $data, FALSE);
 	}
 
-	function kandang($aksi=null, $id=null)
+	function kandang()
 	{
-		if($aksi){
-			if($aksi=='tambah'){
+		$data = [
+			'title' => "Data Kandang",
+			'dataget' => base_url('data_utama/data_kandang'),
+		];
+		$this->load->view('template', $data, FALSE);
+	}
+
+	function data_kandang($page=null, $id=null)
+	{
+		if($page){
+			if($page=='tambah'){
 				$this->form_validation->set_rules('lokasi', 'Lokasi', 'trim|required');
 				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
 				$this->form_validation->set_rules('kapasitas', 'Kapasitas', 'trim|required');
 				if ($this->form_validation->run() == FALSE) {
-					echo "<div class='alert alert-danger'>".validation_errors().",/div>";
+					echo $this->alert->pesan('validasi');
 				} else {
 					$where = [
 						'uniq_lokasi' => $this->input->post('lokasi'),
 						'nama' => $this->input->post('nama'),
 					];
-
 					$cekKandang = $this->db->get_where('kandang', $where)->result();
-					if($cekKandang){
-						echo "<div class='alert alert-danger'>Data kandang sudah tersedia</div>";
-					}else{
-						$uniq = [
+					if(!$cekKandang){
+						$object = [
 							'uniq' => uniqid(),
-							'kapasitas' => $this->input->post('kapasitas'),
+							'uniq_lokasi' => $this->input->post('lokasi'),
+							'nama' => $this->input->post('nama'),
+							'kapasitas' => $this->input->post('kapasitas')
 						];
-						$merge = array_merge($uniq, $where);
-						$this->db->insert('kandang', $merge);
-						if($this->db->affected_rows()>>0){
-							echo "<div class='alert alert-success'>Berhasil menyimpan data</div>";
-						}else{
-							echo "<div class='alert alert-danger'>Gagal menyimpan data</div>";
-						}
-					}
-				}
-			}else
-			if($aksi=='edit'){
-				$where = [
-					'uniq_lokasi' => $this->input->post('lokasi'),
-					'nama' => $this->input->post('nama'),
-					'kapasitas' => $this->input->post('kapasitas'),
-				];
-				$cekKandang = $this->db->get_where('kandang', $where)->result();
-				if($cekKandang){
-					?> <div class="alert-info alert">Gagal memperbaharui data, terdeteksi <?= $this->input->post('nama') ?>, <?= $this->input->post('kapasitas') ?> sudah tersedia</div> <?php
-				}else{
-					$this->db->where('uniq', $this->input->post('id'));
-					$this->db->update('kandang', $where);
-					if($this->db->affected_rows()>>0){
-						echo "<div class='alert alert-success'>Berhasil memperbaharui data</div>";
+						$this->db->insert('kandang', $object);
+						echo $this->alert->pesan('tambah');
 					}else{
-						echo "<div class='alert alert-danger'>Gagal memperbaharui data</div>";
+						?> <div class="alert alert-danger">Data kandang <b><?= $this->input->post('nama') ?></b> sudah tersedia</div> <?php
 					}
 				}
 			}else
-			if($aksi=='hapus'){
+			if($page=='edit'){
+				$this->form_validation->set_rules('lokasi', 'Lokasi', 'trim|required');
+				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
+				$this->form_validation->set_rules('kapasitas', 'Kapasitas', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'uniq_lokasi' => $this->input->post('lokasi'),
+						'nama' => $this->input->post('nama'),
+						'kapasitas' => $this->input->post('kapasitas')
+					];
+					$this->db->where('uniq', $id);
+					$this->db->update('kandang', $object);
+					echo $this->alert->pesan('tambah');
+				}
+			}else
+			if($page=='hapus'){
 				$this->db->where('uniq', $id);
 				$this->db->delete('kandang');
-				if($this->db->affected_rows()>>0){
-					echo "<div class='alert alert-success'>Berhasil menghapus data</div>";
-				}else{
-					echo "<div class='alert alert-danger'>Gagal menghapus data</div>";
-				}
+				echo $this->alert->pesan('hapus');
 			}
 		}
-		$getLokasi = $this->input->get('lokasi');
-		if($getLokasi){
-			$kandang = $this->db->get_where('kandang', ['uniq_lokasi'=>$this->input->get('lokasi')])->result();
+
+		if($this->input->get('lokasi')){
+			$array = array(
+				'lokasi' => $this->input->get('lokasi'),
+			);
+			$this->session->set_userdata( $array );
 		}else{
-			$kandang = $this->db->get('kandang')->result();
+			$this->session->unset_userdata('lokasi');
+		}
+
+		if($this->session->userdata('lokasi')){
+			$kandang = $this->data_utama->kandang_lokasi();
+		}else{
+			$kandang = $this->data_utama->kandang();
 		}
 		$data = [
-			'getLokasi' => $getLokasi,
-			'lokasi' => $this->data_utama->lokasi_semua(),
+			'lokasi' => $this->data_utama->lokasi(),
 			'kandang' => $kandang,
 		];
 		$this->load->view('pages/data_utama/kandang', $data, FALSE);
 	}
 
-	function peternak($aksi=null, $id=null)
+	function peternak()
 	{
-		if($aksi){
-			if($aksi=='tambah'){
+		$data = [
+			'title' => "Data Peternak",
+			'dataget' => base_url('data_utama/data_peternak'),
+		];
+		$this->load->view('template', $data, FALSE);
+	}
+
+	function data_peternak($page=null, $id=null)
+	{
+		if($page){
+			if($page=='tambah'){
 				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
 				$this->form_validation->set_rules('alamat', 'Alamat', 'trim|required');
-				$this->form_validation->set_rules('kontak', 'Nomor Kontak', 'trim|required|is_numeric');
+				$this->form_validation->set_rules('email', 'E-mail', 'trim|required');
+				$this->form_validation->set_rules('kontak', 'Nomor Kontak', 'trim|required');
 				if ($this->form_validation->run() == FALSE) {
-					echo "<div class='alert alert-danger'>".validation_errors()."</div>";
+					echo $this->alert->pesan('validasi');
 				} else {
-					$uniq = ['uniq'=>uniqid(),];
-					$merge = array_merge($uniq, $_POST);
-					$this->db->insert('peternak', $merge);
-					if($this->db->affected_rows()>>0){
-						echo "<div class='alert alert-success'>Berhasil menambahkan data</div>";
+					$object = [
+						'uniq' => uniqid(),
+						'nama' => $this->input->post('nama'),
+						'email' => $this->input->post('email'),
+						'alamat' => $this->input->post('alamat'),
+						'kontak' => $this->input->post('kontak'),
+					];
+					$cekPeternak = $this->db->get_where('peternak', $_POST)->result();
+					if(!$cekPeternak){
+						$this->db->insert('peternak', $object);
+						echo $this->alert->pesan('tambah');
 					}else{
-						echo "<div class='alert alert-danger'>Gagal menambahkan data</div>";
+						?> <div class="alert alert-danger">Data Peternak dengan nama <b><?= $this->input->post('nama') ?></b> sudah tersedia</div> <?php
 					}
 				}
 			}else
-			if($aksi=='edit'){
-				$this->db->where('uniq', $this->input->post('id'));
-				$this->db->update('peternak', $_POST);
-				if($this->db->affected_rows()>>0){
-					echo "<div class='alert alert-success'>Berhasil menambahkan data</div>";
-				}else{
-					echo "<div class='alert alert-danger'>Gagal menambahkan data</div>";
+			if($page=='edit'){
+				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
+				$this->form_validation->set_rules('alamat', 'Alamat', 'trim|required');
+				$this->form_validation->set_rules('email', 'E-mail', 'trim|required');
+				$this->form_validation->set_rules('kontak', 'Nomor Kontak', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'nama' => $this->input->post('nama'),
+						'email' => $this->input->post('email'),
+						'alamat' => $this->input->post('alamat'),
+						'kontak' => $this->input->post('kontak'),
+					];
+					$cekPeternak = $this->db->get_where('peternak', $object)->result();
+					if(!$cekPeternak){
+						echo $id;
+						$this->db->where('uniq', $id);
+						$this->db->update('peternak', $object);
+						echo $this->alert->pesan('edit');
+					}else{
+						?> <div class="alert alert-danger">Data Peternak dengan nama <b><?= $this->input->post('nama') ?></b> sudah tersedia</div> <?php
+					}
 				}
 			}else
-			if($aksi=='hapus'){
+			if($page=='hapus'){
 				$this->db->where('uniq', $id);
 				$this->db->delete('peternak');
-				if($this->db->affected_rows()>>0){
-					echo "<div class='alert alert-success'>Berhasil menghapus data</div>";
-				}else{
-					echo "<div class='alert alert-danger'>Gagal menghapus data</div>";
-				}
+				echo $this->alert->pesan('hapus');
 			}
 		}
 		$data = [
@@ -188,43 +218,70 @@ class Data_utama extends CI_Controller {
 		$this->load->view('pages/data_utama/peternak', $data, FALSE);
 	}
 
-	function pelanggan($aksi=null, $id=null)
+	function pelanggan()
 	{
-		if($aksi){
-			if($aksi=='tambah'){
+		$data = [
+			'title' => "Data Pelanggan",
+			'dataget' => base_url('data_utama/data_pelanggan'),
+		];
+		$this->load->view('template', $data, FALSE);
+	}
+
+	function data_pelanggan($page=null, $id=null)
+	{
+		if($page){
+			if($page=='tambah'){
 				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
+				$this->form_validation->set_rules('email', 'E-mail', 'trim|required');
 				$this->form_validation->set_rules('alamat', 'Alamat', 'trim|required');
-				$this->form_validation->set_rules('kontak', 'Nomor Kontak', 'trim|required|is_numeric');
+				$this->form_validation->set_rules('kontak', 'Nomor Kontak', 'trim|required');
 				if ($this->form_validation->run() == FALSE) {
-					echo "<div class='alert alert-danger'>".validation_errors()."</div>";
+					echo $this->alert->pesan('validasi');
 				} else {
-					$uniq = ['uniq'=>uniqid(),];
-					$merge = array_merge($uniq, $_POST);
-					$this->db->insert('pelanggan', $merge);
-					if($this->db->affected_rows()>>0){
-						echo "<div class='alert alert-success'>Berhasil menambahkan data</div>";
+					$object = [
+						'uniq' => uniqid(),
+						'nama' => $this->input->post('nama'),
+						'email' => $this->input->post('email'),
+						'alamat' => $this->input->post('alamat'),
+						'kontak' => $this->input->post('kontak'),
+					];
+					$cekPelanggan = $this->db->get_where('pelanggan', $_POST)->result();
+					if(!$cekPelanggan){
+						$this->db->insert('pelanggan', $object);
+						echo $this->alert->pesan('tambah');
 					}else{
-						echo "<div class='alert alert-danger'>Gagal menambahkan data</div>";
+						?> <div class="alert alert-danger"> Data sudah tersedia</div> <?php
 					}
 				}
 			}else
-			if($aksi=='edit'){
-				$this->db->where('uniq', $this->input->post('id'));
-				$this->db->update('pelanggan', $_POST);
-				if($this->db->affected_rows()>>0){
-					echo "<div class='alert alert-success'>Berhasil menambahkan data</div>";
-				}else{
-					echo "<div class='alert alert-danger'>Gagal menambahkan data</div>";
+			if($page=='edit'){
+				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
+				$this->form_validation->set_rules('email', 'E-mail', 'trim|required');
+				$this->form_validation->set_rules('alamat', 'Alamat', 'trim|required');
+				$this->form_validation->set_rules('kontak', 'Nomor Kontak', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'nama' => $this->input->post('nama'),
+						'email' => $this->input->post('email'),
+						'alamat' => $this->input->post('alamat'),
+						'kontak' => $this->input->post('kontak'),
+					];
+					$cekPelanggan = $this->db->get_where('pelanggan', $_POST)->result();
+					if(!$cekPelanggan){
+						$this->db->where('uniq', $id);
+						$this->db->update('pelanggan', $object);
+						echo $this->alert->pesan('edit');
+					}else{
+						?> <div class="alert alert-danger"> Data sudah tersedia</div> <?php
+					}
 				}
 			}else
-			if($aksi=='hapus'){
+			if($page=='hapus'){
 				$this->db->where('uniq', $id);
 				$this->db->delete('pelanggan');
-				if($this->db->affected_rows()>>0){
-					echo "<div class='alert alert-success'>Berhasil menghapus data</div>";
-				}else{
-					echo "<div class='alert alert-danger'>Gagal menghapus data</div>";
-				}
+				echo $this->alert->pesan('hapus');
 			}
 		}
 		$data = [
@@ -233,42 +290,179 @@ class Data_utama extends CI_Controller {
 		$this->load->view('pages/data_utama/pelanggan', $data, FALSE);
 	}
 
-	function pengguna($aksi=null, $id=null)
+	function kategori_barang()
 	{
-		if($aksi){
-			if($aksi=='tambah'){
-				$this->form_validation->set_rules('hak_akses', 'Peran', 'trim|required');
+		$data = [
+			'title' => "Kategori Barang",
+			'dataget' => base_url('data_utama/data_kategori_barang'),
+		];
+		$this->load->view('template', $data, FALSE);
+	}
+
+	function data_kategori_barang($page=null, $id=null)
+	{
+		if($page){
+			if($page=='tambah'){
+				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'uniq' => uniqid(),
+						'nama' => $this->input->post('nama'),
+					];
+					$this->db->insert('kategori_barang', $object);
+					echo $this->alert->pesan('tambah');
+				}
+			}else
+			if($page=='edit'){
+				$this->form_validation->set_rules('nama', 'Nama', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'nama' => $this->input->post('nama'),
+					];
+					$this->db->where('uniq', $id);
+					$this->db->update('kategori_barang', $object);
+					echo $this->alert->pesan('tambah');
+				}
+			}else
+			if($page=='hapus'){
+				$this->db->where('uniq', $id);
+				$this->db->delete('kategori_barang');
+				echo $this->alert->pesan('hapus');
+			}
+		}
+		$data = [
+			'kategori_barang' => $this->data_utama->kategori_barang(),
+		];
+		$this->load->view('pages/data_utama/kategori_barang', $data, FALSE);
+	}
+
+	function barang()
+	{
+		$data = [
+			'title' => "Data Barang",
+			'dataget' => base_url('data_utama/data_barang'),
+		];
+		$this->load->view('template', $data, FALSE);
+	}
+
+	function data_barang($page=null, $id=null)
+	{
+		if($page){
+			if($page=='tambah'){
+				$this->form_validation->set_rules('kategori', 'Kategori Barang', 'trim|required');
+				$this->form_validation->set_rules('nama', 'Nama Barang', 'trim|required|is_unique[barang.nama]');
+				$this->form_validation->set_rules('keterangan', 'Keterangan Barang', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'uniq' => uniqid(),
+						'nama' => $this->input->post('nama'),
+						'uniq_kategori' => $this->input->post('kategori'),
+						'keterangan' => $this->input->post('keterangan')
+					];
+					$this->db->insert('barang', $object);
+					echo $this->alert->pesan('tambah');
+				}
+			}else
+			if($page=='edit'){
+				$this->form_validation->set_rules('kategori', 'Kategori Barang', 'trim|required');
+				$this->form_validation->set_rules('nama', 'Nama Barang', 'trim|required');
+				$this->form_validation->set_rules('keterangan', 'Keterangan Barang', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					$object = [
+						'nama' => $this->input->post('nama'),
+						'uniq_kategori' => $this->input->post('kategori'),
+						'keterangan' => $this->input->post('keterangan')
+					];
+					$this->db->where('uniq', $id);
+					$this->db->update('barang', $object);
+					echo $this->alert->pesan('edit');
+				}
+			}else
+			if($page='hapus'){
+				$this->db->where('uniq', $id);
+				$this->db->delete('barang');
+				echo $this->alert->pesan($id);
+			}
+		}
+		$data = [
+			'barang' => $this->data_utama->barang(),
+		];
+		$this->load->view('pages/data_utama/barang', $data, FALSE);
+	}
+
+	function pengguna()
+	{
+		$data = [
+			'title' => "Data Pengguna",
+			'dataget' => base_url('data_utama/data_pengguna'),
+		];
+		$this->load->view('template', $data, FALSE);
+	}
+
+	function data_pengguna($page=null, $id=null)
+	{
+		if($page){
+			if($page=='tambah'){
+				$this->form_validation->set_rules('hak_akses', 'Hak Akses', 'trim|required');
 				$this->form_validation->set_rules('user', 'User', 'trim|required');
 				if ($this->form_validation->run() == FALSE) {
-					echo "<div class='alert alert-danger'>".validation_errors()."</div>";
+					echo $this->alert->pesan('validasi');
 				} else {
-					$table = $this->level()[$this->input->post('hak_akses')];
-					$detailUser = $this->db->get_where($table, ['uniq'=>$this->input->post('user')])->row_array();
-					if($detailUser['email']){
-						$email = $detailUser['email'];
-					}else{
-						$email = strtolower(str_replace(' ', '', $detailUser['nama'])).'@pengguna.id';
+					if($this->input->post('hak_akses')==2){
+						$cekUser = $this->db->get_where('peternak', ['uniq'=>$this->input->post('user')])->row_array();
+					}else
+					if($this->input->post('hak_akses')==3){
+						$cekUser = $this->db->get_where('pelanggan', ['uniq'=>$this->input->post('user')])->row_array();
 					}
-					$object = [
-						'uniq' => $detailUser['uniq'],
-						'nama' => $detailUser['nama'],
-						'username' => $email,
-						'password' => password_hash('123456', PASSWORD_DEFAULT),
-						'hak_akses' => $this->input->post('hak_akses'),
-						'status' => 1,
-					];
-					$cekPengguna = $this->db->get_where('users', $object)->result();
-					if($cekPengguna){
-						echo "<div class='alert alert-danger'>Pengguna sudah tersedia</div>";
-					}else{
+					$cekPengguna = $this->db->get_where('users', ['uniq'=>$this->input->post('user')])->result();
+					if(!$cekPengguna){
+						$object = [
+							'uniq' => $this->input->post('user'),
+							'username' => $cekUser['email'],
+							'nama' => $cekUser['nama'],
+							'password' => password_hash('123456', PASSWORD_DEFAULT),
+							'hak_akses' => $this->input->post('hak_akses'),
+							'status' => 1
+						];
 						$this->db->insert('users', $object);
-						if($this->db->affected_rows()>>0){
-							echo "<div class='alert alert-success'>Berhasil menambahkan data</div>";
-						}else{
-							echo "<div class='alert alert-danger'>Gagal menambahkan data</div>";
-						}
+						echo $this->alert->pesan('tambah');
+					}else{
+						?> <div class="alert alert-danger"> Data pengguna sudah tersedia</div> <?php
 					}
 				}
+			}else
+			if($page=='edit'){
+				$this->form_validation->set_rules('status', 'Hak Akses', 'trim|required');
+				if ($this->form_validation->run() == FALSE) {
+					echo $this->alert->pesan('validasi');
+				} else {
+					if($this->input->post('password')){
+						$object = [
+							'status' => $this->input->post('status'),
+						];
+					}else{
+						$object = [
+							'status' => $this->input->post('status'),
+							'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
+						];
+					}
+					$this->db->where('uniq', $id);
+					$this->db->update('users', $object);
+					echo $this->alert->pesan('edit');
+				}
+			}else
+			if($page=='hapus'){
+				$this->db->where('uniq', $id);
+				$this->db->delete('users');
+				echo $this->alert->pesan('hapus');
 			}
 		}
 		$data = [
@@ -280,32 +474,20 @@ class Data_utama extends CI_Controller {
 	function peran_pengguna()
 	{
 		if($this->input->post('hak_akses')){
-			$hak_akses = $this->input->post('hak_akses');
-			$table = $this->level()[$hak_akses];
-			$cekPengguna = $this->db->query("SELECT * from $table where uniq not in(SELECT uniq from users)")->result();
+			if($this->input->post('hak_akses')==2){
+				$cekPengguna = $this->db->query("SELECT * from peternak where uniq not in(SELECT uniq from users)")->result();
+			}else
+			if($this->input->post('hak_akses')==3){
+				$cekPengguna = $this->db->query("SELECT * from pelanggan where uniq not in(SELECT uniq from users)")->result();
+			}
 			if($cekPengguna){
-				?>
-				<option value="">...</option>
-				<?php foreach ($cekPengguna as $key => $value): ?>
-					<option value="<?= $value->uniq ?>"><?= $value->nama ?></option>
-				<?php endforeach ?>
-				<?php
+				foreach ($cekPengguna as $key => $value) {
+					?> <option value="<?= $value->uniq ?>"><?= $value->nama ?></option> <?php
+				}
 			}else{
-				?> <option value="">0 Results</option> <?php
+				?> <option value="">...</option> <?php
 			}
 		}
 	}
 
-	function level()
-	{
-		return $level = [
-			'1' => 'admin',
-			'2' => 'peternak',
-			'3' => 'pelanggan',
-		];
-	}
-
 }
-
-/* End of file Data_uatama.php */
-/* Location: ./application/controllers/Data_uatama.php */

@@ -25,7 +25,12 @@ class App extends CI_Controller {
 		if(!$this->session->userdata('username')&&!$this->session->userdata('password')&&!$this->session->userdata('hak_akses')){
 			$this->login();
 		}else{
-			$this->dashboard();
+			$data = [
+				'title' => 'Dashboard',
+				'dataget' => base_url('app/dashboard'),
+				'dataid' => null
+			];
+			$this->load->view('template', $data, FALSE);
 		}
 	}
 
@@ -39,18 +44,15 @@ class App extends CI_Controller {
 
 	function dashboard()
 	{
+		$this->load->model('m_data_utama', 'data_utama');
 		$data = [
-			'title' => 'Dashboard',
-			'dataget' => base_url('app/dashboard_data'),
-			'dataid' => null
+			'title' => "Dahboard",
+			'lokasi' => $this->data_utama->lokasi(),
+			'kandang' => $this->data_utama->kandang(),
+			'peternak' => $this->data_utama->peternak(),
+			'pelanggan' => $this->data_utama->pelanggan(),
+			'pengguna' => $this->data_utama->pengguna(),
 		];
-		$this->load->view('template', $data, FALSE);
-	}
-
-	function dashboard_data()
-	{
-		echo "<pre>";
-		print_r ($this->session->all_userdata());
-		echo "</pre>";
+		$this->load->view('pages/dashboard', $data, FALSE);
 	}
 }
